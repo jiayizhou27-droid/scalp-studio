@@ -1,0 +1,27 @@
+name: Deploy GPU backend (manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: scalp-gpu-deploy
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check deployment credentials
+        run: |
+          test -n "$MODAL_TOKEN_ID" || { echo 'Set MODAL_TOKEN_ID in repository Actions secrets'; exit 1; }
+          test -n "$MODAL_TOKEN_SECRET" || { echo 'Set MODAL_TOKEN_SECRET in repository Actions secrets'; exit 1; }
+      - run: python -m pip install 'modal>=1,<2'
+      - name: Deploy gateway and GPU worker
+        run: python -m modal deploy modal_deploy.py

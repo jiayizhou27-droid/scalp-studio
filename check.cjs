@@ -2,7 +2,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const noop=()=>{};const elements=new Map();
 const gl=new Proxy({getShaderParameter:()=>true,getProgramParameter:()=>true,createBuffer:()=>({}),createProgram:()=>({}),createShader:()=>({}),getAttribLocation:()=>1,getUniformLocation:()=>({})},{get:(o,k)=>k in o?o[k]:noop});
 function element(){return {value:'#43413b',style:{},classList:{add:noop,toggle:noop},append:noop,replaceChildren:noop,getContext:type=>type==='webgl'?gl:{},getBoundingClientRect:()=>({width:700,height:550}),selectedOptions:[{text:'测试区域'}],setAttribute:noop};}
-const sandbox={console,Math,Date,JSON,Float32Array,Uint8Array,Blob,URL,requestAnimationFrame:noop,devicePixelRatio:1,document:{getElementById:id=>{if(!elements.has(id))elements.set(id,element());return elements.get(id)},createElement:()=>element(),querySelectorAll:()=>[]}};
+const sandbox={console,Math,Date,JSON,Float32Array,Uint8Array,Blob,URL,location:{hostname:'localhost',origin:'http://localhost'},requestAnimationFrame:noop,devicePixelRatio:1,document:{getElementById:id=>{if(!elements.has(id))elements.set(id,element());return elements.get(id)},createElement:()=>element(),querySelectorAll:()=>[]}};
 vm.createContext(sandbox);vm.runInContext(fs.readFileSync('app.js','utf8'),sandbox);
 vm.runInContext(`
 if(geometry!==null)throw Error('Unexpected template');
