@@ -1,0 +1,10 @@
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
+python-multipart>=0.0.18
+numpy>=1.26,<3
+Pillow>=10.4
+rembg[cpu]>=2.0.67,<3
+huggingface-hub>=0.25
+safetensors>=0.4
+# Install compatible torch/torchvision CUDA wheels separately, then VGGT from its
+# official repository. See README. Never use the non-commercial VGGT-1B weights.
