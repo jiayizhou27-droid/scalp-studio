@@ -22,5 +22,5 @@ const points=[];for(let v=0;v<8;v++)points.push([.5+.2*(mu[v*3]+model.basis[v*3*
 const result=F.fit(model,points);assert(result.error<.02);assert(result.coefficients[0]>.05);assert(result.vertices[18]>mu[18]);
 const data=F.geometry(model,result);assert.equal(data.positions.length,360000);assert.equal(data.source,'facescape_fit');assert(data.positions.every(Number.isFinite));assert(data.positions.every(x=>Math.abs(x)<=1.000001));assert.equal(data.colors.length,data.positions.length);
 assert.throws(()=>F.fit(model,Array(8).fill([.5,.5])));
-const html=fs.readFileSync('index.html','utf8');assert(html.includes('fsModel'));assert(html.includes('facescape-local.js'));assert(html.includes('facescape-ui.js'));
+// Legacy FaceScape math remains testable; its manual-model UI has been retired.
 console.log('PASS: C/Fortran streamed NPY neutral extraction, truncation, solver, camera, identity deformation and surface generation (synthetic data only).');
