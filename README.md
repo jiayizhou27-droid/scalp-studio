@@ -1,3 +1,42 @@
+# Scalp Studio — 扫描导入与个体化纹发设计
+
+默认流程已简化为：**现成工具扫描客户本人 → 导入 GLB / GLTF / 完整 ZIP → 圈画局部纹发区域**。无需部署 GPU、填写服务地址或配置模型密钥。网页没有自动从少量照片生成完整头部的能力，也不使用替代头模。
+
+## 使用
+
+1. 用现成摄影测量 / 扫描工具（例如 [Polycam](https://poly.cam/)）获取静止客户头部的真实扫描；不要使用 AI 文生三维功能。扫描在第三方服务中完成，需要其账号及客户授权。
+2. 检查扫描是否变形、缺失，裁掉环境和肩膀，再导出 GLTF。平台的额度、导出权限及数据处理条款以其当前说明为准。
+3. 在网页导入完整 ZIP 或 GLB；如果导出为 GLTF 文件组，同时选择模型、BIN 和贴图。完整 ZIP 最方便。文件总量限制为 180MB。
+4. 旋转检查头型，以当前角度设正面，然后圈画额角、发缝、发际线等多个独立区域。PNG、JSON、PLY 导出保存至本机。
+
+## 表示与边界
+
+导入器在扫描网格表面按面积采样最多 150,000 个点，保留世界坐标变换与采样到的顶点颜色 / 基色贴图，用已有 WebGL 点云设计器渲染。不会生成头型，也不会将照片投射到通用头模。采样会丢失部分细节；无贴图或顶点颜色的材质会明确提示不能视为真实肤色。
+
+模型应已裁切为头部。工具不自动分离完整扫描中的人体 / 背景，不自动分类裸露头皮和已有头发。头发遮挡的头皮无法从扫描恢复。当前是设计沟通原型，未验证头部测量精度或实际纹发效果。
+
+扫描文件导入后在本机解析。首次使用从 esm.sh 加载固定版本的 Three.js 0.180.0、fflate 0.8.2 组件，Draco 模型会加载固定 1.5.7 解码器。模型与贴图不上传给组件提供方；GLTF 中的外部资源 URL 会被拒绝，只允许已选择的本机文件或内嵌资源。扫描平台自己的照片上传及处理是独立步骤。
+
+支持静态 GLTF / GLB 网格及其中的点对象、普通基色贴图与 Draco。动画 / 骨骼 / 实例模型拒绝导入；KTX2、Meshopt 等额外压缩扩展未经支持验证，请改用普通 GLTF / GLB 导出。
+
+## 验证
+
+```sh
+node --check scan-import.js
+node --check app.js
+node check-scan.cjs
+node check.cjs
+node check-url.cjs
+node check-jobs.cjs
+python -m unittest backend.test_geometry backend.test_cloud_api
+```
+
+本地静态检查、数据归一化、资源路径约束、原有渲染和任务检查通过。当前环境无法启动浏览器自动化，因此没有完成真实浏览器 GLTF / ZIP 端到端导入测试；也未完成真人头部扫描导入与效果验证。不要把现有测试表述为成功的真人扫描演示。
+
+自建 GPU 流程仅在高级选项中保留，参见 [GPU_DEPLOY.md](GPU_DEPLOY.md)。它未部署，也不属于默认导入流程。
+
+<details><summary>高级：原 VGGT 重建技术说明</summary>
+
 # Scalp Studio V2 — 个体化纹发重建与设计
 
 ## Current status / 当前状态
@@ -63,3 +102,5 @@ node check.cjs
 ```
 
 Tests verify foreground filtering, invalid-depth rejection, color preservation and mask alignment using synthetic geometry, plus independent design regions and the absence of template fallback. They are **not a model inference benchmark**. Backend source syntax/import checks succeeded; ASGI request-level testing was attempted but could not complete in this environment. GPU model inference has not been tested.
+
+</details>

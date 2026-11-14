@@ -1,0 +1,21 @@
+const assert=require('assert'),fs=require('fs'),{pack,localResolver}=require('./scan-import.js');
+const positions=[],colors=[];
+for(let i=0;i<100;i++){positions.push(100+i/100,200+i%5,300+i%7);colors.push(42,84,126)}
+const data=pack(positions,colors,'customer.glb');
+assert.equal(data.positions.length,300);assert.equal(data.source,'imported_scan');assert.equal(data.colors[0],42);
+assert(data.positions.every(Number.isFinite));assert(Math.max(...data.positions)<=1.000001);assert(Math.min(...data.positions)>=-1.000001);
+assert.throws(()=>pack([1,1,1],[42,84,126],'bad.glb'));
+assert.throws(()=>pack(Array(300).fill(1),colors,'bad.glb'));
+assert.throws(()=>pack([NaN,...positions.slice(1)],colors,'bad.glb'));
+const resolver=localResolver([{name:'scan/scene.bin'},{name:'scan/textures/albedo.png'},{name:'image.jpg'}],file=>'blob:'+file.name);
+assert.equal(resolver.resolve('scan/scene.bin'),'blob:scan/scene.bin');
+assert.equal(resolver.resolve('textures/albedo.png'),'blob:scan/textures/albedo.png');
+assert.equal(resolver.resolve('textures/image.jpg'),'blob:image.jpg');
+assert.equal(resolver.resolve('data:image/png;base64,AAAA'),'data:image/png;base64,AAAA');
+for(const url of ['https://example.com/collect','//example.com/image.png','missing.bin'])assert.throws(()=>resolver.resolve(url));
+const ambiguous=localResolver([{name:'a/image.png'},{name:'b/image.png'}],file=>file.name);
+assert.throws(()=>ambiguous.resolve('image.png'));
+const html=fs.readFileSync('index.html','utf8');
+assert(html.indexOf('id="importScan"')<html.indexOf('id="endpoint"'));
+assert(html.includes('scan-import.js'));assert(html.includes('Photogrammetry'));
+console.log('PASS: scan normalization, preserved color, invalid geometry, local companion files, blocked remote resources, ambiguity and import-first UI.');
