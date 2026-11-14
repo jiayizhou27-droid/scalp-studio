@@ -1,3 +1,22 @@
+# Scalp Studio — FaceScape 个人非商用原型
+
+默认入口已改为 **本机选择官方 FaceScape v1.6 NPZ → 正面照片标八点 → 简化身份形状拟合 → 局部纹发圈画**。无需 Python、云 GPU 或服务器。官方模型需要用户自行下载一次；模型和照片不上传。
+
+[详细使用方法、限制与验证状态](FACESCAPE.md)。拟合使用统计先验，灰色材质不是照片肤色，未见头部不代表真实扫描。当前只有合成模型测试，尚未使用真实官方 NPZ 或真人照片完成端到端验证。
+
+模型数据与权重不包含在公开仓库中。FaceScape 许可及论文署名见上述文档。扫描文件导入和自建服务作为折叠的备选入口保留。
+
+```sh
+node check-facescape.cjs
+node check-scan.cjs
+node check.cjs
+node check-url.cjs
+node check-jobs.cjs
+python -m unittest backend.test_geometry backend.test_cloud_api
+```
+
+<details><summary>备选扫描导入与高级重建说明</summary>
+
 # Scalp Studio — 扫描导入与个体化纹发设计
 
 默认流程已简化为：**现成工具扫描客户本人 → 导入 GLB / GLTF / 完整 ZIP → 圈画局部纹发区域**。无需部署 GPU、填写服务地址或配置模型密钥。网页没有自动从少量照片生成完整头部的能力，也不使用替代头模。
@@ -102,5 +121,7 @@ node check.cjs
 ```
 
 Tests verify foreground filtering, invalid-depth rejection, color preservation and mask alignment using synthetic geometry, plus independent design regions and the absence of template fallback. They are **not a model inference benchmark**. Backend source syntax/import checks succeeded; ASGI request-level testing was attempted but could not complete in this environment. GPU model inference has not been tested.
+
+</details>
 
 </details>

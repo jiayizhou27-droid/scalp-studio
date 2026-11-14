@@ -169,3 +169,10 @@ def ui_script():
 @app.get('/scan-import.js', include_in_schema=False)
 def scan_import_script():
     return FileResponse(Path(__file__).resolve().parents[1]/'scan-import.js', media_type='application/javascript')
+
+
+@app.get('/facescape-{asset}.js', include_in_schema=False)
+def facescape_script(asset: str):
+    if asset not in ('local', 'ui'):
+        raise HTTPException(404)
+    return FileResponse(Path(__file__).resolve().parents[1]/f'facescape-{asset}.js', media_type='application/javascript')
